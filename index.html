@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sri Lanka Business AI Finder</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🇱🇰 Sri Lanka Business & Contact Finder</h1>
+      <p>Search computer shops, repair centers, and services across Sri Lanka using AI.</p>
+    </header>
+
+    <div class="config-card">
+      <label for="apiKey">Gemini API Key:</label>
+      <input type="password" id="apiKey" placeholder="Paste your Google Gemini API Key here...">
+      <small>Get a free key from <a href="https://aistudio.google.com/" target="_blank">Google AI Studio</a></small>
+    </div>
+
+    <form id="searchForm">
+      <input type="text" id="queryInput" placeholder="e.g., Colombo computer parts shops, Kandy laptop repair..." required>
+      <button type="submit" id="searchBtn">Search</button>
+    </form>
+
+    <div id="loader" class="loader hidden">Searching live data...</div>
+    <div id="error" class="error-msg hidden"></div>
+
+    <div id="resultsGrid" class="results-grid"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
