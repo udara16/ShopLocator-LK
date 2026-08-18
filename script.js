@@ -5,7 +5,7 @@ const loader = document.getElementById("loader");
 const errorBox = document.getElementById("error");
 const resultsGrid = document.getElementById("resultsGrid");
 
-// Save & load API key from local storage
+// Load & save API key in localStorage
 apiKeyInput.value = localStorage.getItem("gemini_key") || "";
 apiKeyInput.addEventListener("input", (e) => {
   localStorage.setItem("gemini_key", e.target.value.trim());
@@ -32,7 +32,6 @@ searchForm.addEventListener("submit", async (e) => {
   resultsGrid.innerHTML = "";
   loader.classList.remove("hidden");
 
-  // General Prompt designed to handle any type of Sri Lankan business/service
   const prompt = `
     You are a general Sri Lankan business and service directory locator.
     Perform a live search to find verified listings in Sri Lanka matching: "${query}".
@@ -43,28 +42,28 @@ searchForm.addEventListener("submit", async (e) => {
     [
       {
         "name": "Business / Service / Professional Name",
-        "category": "Category or Industry (e.g., Healthcare, Automobile, Dining, Tech)",
+        "category": "Industry (e.g., Healthcare, Automobile, Dining, Tech)",
         "location": "City, District, or Town in Sri Lanka",
         "contact": "Local Phone Number(s) or Hotline",
-        "address": "Full physical address, landmark, or web link",
-        "description": "Brief description of the services offered, specialties, or opening hours"
+        "address": "Full physical address, landmark, or street",
+        "description": "Brief description of services, specialties, or opening hours"
       }
     ]
     
     Rules:
-    - Only return verified, real Sri Lankan details.
-    - Return strictly raw JSON. Do not include markdown code ticks (\`\`\`json).
+    - Only return verified, real Sri Lankan business details.
+    - Return strictly raw JSON. Do not include markdown code block ticks (\`\`\`json).
   `;
 
   try {
-    const url = `const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
     const response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
-        tools: [{ googleSearch: {} }]
+        tools: [{ google_search: {} }]
       })
     });
 
@@ -75,7 +74,16 @@ searchForm.addEventListener("submit", async (e) => {
     }
 
     let text = data.candidates?.[0]?.content?.parts?.[0]?.text || "[]";
-    text = text.replace(/^```json/, "").replace(/^```/, "").replace(/```$/, "").trim();
+
+    // Clean up code block markers
+    text = text.replace(/```json/gi, "").replace(/```/g, "").trim();
+
+    // Extract outer array boundaries
+    const arrayStart = text.indexOf("[");
+    const arrayEnd = text.lastIndexOf("]");
+    if (arrayStart !== -1 && arrayEnd !== -1) {
+      text = text.substring(arrayStart, arrayEnd + 1);
+    }
 
     const businesses = JSON.parse(text);
     renderResults(businesses);
@@ -87,28 +95,60 @@ searchForm.addEventListener("submit", async (e) => {
   }
 });
 
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str).replace(/[&<>"']/g, (m) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[m]));
+}
+
 function renderResults(items) {
-  if (!items || items.length === 0) {
-    resultsGrid.innerHTML = `<p style="text-align: center; color: #94a3b8;">No listings found. Try a different search term.</p>`;
+  if (!items || !Array.isArray(items) || items.length === 0) {
+    resultsGrid.innerHTML = `<p style="text-align: center; color: #94a3b8;">No listings found. Try adjusting your search keywords.</p>`;
     return;
   }
 
-  resultsGrid.innerHTML = items.map(item => `
-    <div class="card">
-      <div class="card-header">
-        <div>
-          <span class="card-title">${item.name || "N/A"}</span>
-          ${item.category ? `<span class="card-category">${item.category}</span>` : ""}
+  resultsGrid.innerHTML = items.map((item) => {
+    const name = escapeHtml(item.name || "Unnamed Listing");
+    const category = escapeHtml(item.category || "");
+    const location = escapeHtml(item.location || "Sri Lanka");
+    const address = escapeHtml(item.address || "");
+    const contact = escapeHtml(item.contact || "");
+    const description = escapeHtml(item.description || "");
+
+    const mapQuery = encodeURIComponent(`${item.name || ''} ${item.address || ''} ${item.location || 'Sri Lanka'}`.trim());
+    const mapUrl = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
+
+    const cleanPhone = (item.contact || "").replace(/[^0-9+]/g, "");
+
+    return `
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <span class="card-title">${name}</span>
+            ${category ? `<span class="card-category">${category}</span>` : ""}
+          </div>
+          <span class="card-badge">📍 ${location}</span>
         </div>
-        <span class="card-badge">📍 ${item.location || "Sri Lanka"}</span>
+
+        <p class="card-desc">${description}</p>
+
+        <div class="card-meta">
+          ${contact ? `<span>📞 <strong>Contact:</strong> ${contact}</span>` : ""}
+          ${address ? `<span>🏢 <strong>Address:</strong> ${address}</span>` : ""}
+        </div>
+
+        <div class="card-actions">
+          ${cleanPhone ? `<a href="tel:${cleanPhone}" class="action-btn btn-call">📞 Call Now</a>` : ""}
+          <a href="${mapUrl}" target="_blank" rel="noopener noreferrer" class="action-btn btn-map">🗺️ View on Maps</a>
+        </div>
       </div>
-      <p class="card-desc">${item.description || ""}</p>
-      <div class="card-meta">
-        <span>📞 <strong>Contact:</strong> ${item.contact || "N/A"}</span>
-        <span>🏢 <strong>Address:</strong> ${item.address || "N/A"}</span>
-      </div>
-    </div>
-  `).join("");
+    `;
+  }).join("");
 }
 
 function showError(msg) {
