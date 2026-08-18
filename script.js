@@ -32,36 +32,44 @@ searchForm.addEventListener("submit", async (e) => {
   resultsGrid.innerHTML = "";
   loader.classList.remove("hidden");
 
-  // Prompt එක වෙනස් කර ඇත: Company පමණක් නොව කුඩා කඩ, කාර්මික ශිල්පීන්, සේවා සපයන්නන් ඇතුළත් කර ඇත
-  const prompt = `You are a Sri Lanka local spot, business, and service finder.
-The user is searching for: "${query}".
+  const systemInstruction = `You are a Sri Lanka local spot, business, and service directory.
+Include local shops, technicians, individual service providers, clinics, restaurants, or workshops matching the exact town/service requested, rather than only large corporate chains.`;
 
-Find 4 to 8 relevant entries matching this specific search query in Sri Lanka.
-DO NOT only return large corporate companies. Include local shops, technicians, individual service providers, clinics, restaurants, or workshops matching the exact town/service requested.
+  const prompt = `Find 4 to 8 relevant entries matching this specific search query in Sri Lanka: "${query}".`;
 
-Respond ONLY with a valid JSON array of objects following this exact schema:
-[
-  {
-    "name": "Specific Business / Service / Shop / Provider Name",
-    "category": "Specific category (e.g. Masonry, Plumbing, Pharmacy, Seafood Restaurant)",
-    "location": "Town / City / Area in Sri Lanka",
-    "contact": "Phone number, mobile, or hotline",
-    "address": "Road, Junction, Landmark or Street address",
-    "description": "Short explanation of services provided, specialities, or availability"
-  }
-]`;
+  // Structured output schema
+  const responseSchema = {
+    type: "ARRAY",
+    items: {
+      type: "OBJECT",
+      properties: {
+        name: { type: "STRING" },
+        category: { type: "STRING" },
+        location: { type: "STRING" },
+        contact: { type: "STRING" },
+        address: { type: "STRING" },
+        description: { type: "STRING" }
+      },
+      required: ["name", "category", "location", "contact", "address", "description"]
+    }
+  };
 
   try {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+    // Updated endpoint to gemini-3.6-flash
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
 
     const response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        systemInstruction: {
+          parts: [{ text: systemInstruction }]
+        },
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
           responseMimeType: "application/json",
-          temperature: 0.3
+          responseSchema: responseSchema,
+          temperature: 0.2
         }
       })
     });
@@ -135,8 +143,8 @@ function renderResults(items) {
         </div>
 
         <div class="card-actions">
-          ${cleanPhone ? `<a href="tel:${cleanPhone}" class="action-btn btn-call">📞 Call Now</a>` : ""}
-          <a href="${mapUrl}" target="_blank" rel="noopener noreferrer" class="action-btn btn-map">🗺️ View on Maps</a>
+          ${cleanPhone ? `<a href="tel:${escapeHtml(cleanPhone)}" class="action-btn btn-call">📞 Call Now</a>` : ""}
+          <a href="${escapeHtml(mapUrl)}" target="_blank" rel="noopener noreferrer" class="action-btn btn-map">🗺️ View on Maps</a>
         </div>
       </div>
     `;
