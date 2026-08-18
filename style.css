@@ -11,6 +11,7 @@ body {
   padding: 40px 20px;
   display: flex;
   justify-content: center;
+  min-height: 100vh;
 }
 
 .container {
@@ -145,7 +146,7 @@ form {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 .results-grid {
@@ -203,8 +204,8 @@ form {
 
 .card-meta {
   display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
+  flex-direction: column;
+  gap: 6px;
   margin-top: 5px;
   padding-top: 10px;
   border-top: 1px solid #334155;
@@ -214,4 +215,59 @@ form {
 
 .card-meta span strong {
   color: #f1f5f9;
+}
+
+.card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px solid #334155;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.btn-call {
+  background-color: #0369a1;
+  color: #e0f2fe;
+  border: 1px solid #0284c7;
+}
+
+.btn-call:hover {
+  background-color: #0284c7;
+}
+
+.btn-map {
+  background-color: #1e293b;
+  color: #38bdf8;
+  border: 1px solid #475569;
+}
+
+.btn-map:hover {
+  background-color: #334155;
+  border-color: #38bdf8;
+}
+
+footer {
+  text-align: center;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #334155;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+footer strong {
+  color: #38bdf8;
 }
