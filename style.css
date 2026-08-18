@@ -1,0 +1,182 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  background-color: #0f172a;
+  color: #f8fafc;
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.container {
+  width: 100%;
+  max-width: 800px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+header h1 {
+  font-size: 1.8rem;
+  color: #38bdf8;
+  margin-bottom: 8px;
+}
+
+header p {
+  color: #94a3b8;
+  font-size: 0.95rem;
+}
+
+.config-card {
+  background: #1e293b;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px solid #334155;
+}
+
+.config-card label {
+  display: block;
+  font-size: 0.85rem;
+  margin-bottom: 5px;
+  color: #cbd5e1;
+}
+
+.config-card input {
+  width: 100%;
+  padding: 8px 12px;
+  background: #0f172a;
+  border: 1px solid #475569;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+}
+
+.config-card small {
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+.config-card a {
+  color: #38bdf8;
+  text-decoration: none;
+}
+
+form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+#queryInput {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #334155;
+  background: #1e293b;
+  color: #fff;
+  font-size: 1rem;
+}
+
+#searchBtn {
+  padding: 12px 24px;
+  background: #0284c7;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#searchBtn:hover {
+  background: #0369a1;
+}
+
+.loader {
+  text-align: center;
+  padding: 20px;
+  color: #38bdf8;
+  font-weight: 500;
+}
+
+.error-msg {
+  background: #450a0a;
+  border: 1px solid #991b1b;
+  color: #fca5a5;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
+
+.hidden {
+  display: none;
+}
+
+.results-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.card {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.card-title {
+  font-size: 1.15rem;
+  color: #38bdf8;
+  font-weight: 600;
+}
+
+.card-badge {
+  background: #334155;
+  color: #e2e8f0;
+  font-size: 0.75rem;
+  padding: 3px 8px;
+  border-radius: 12px;
+}
+
+.card-desc {
+  font-size: 0.9rem;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
+
+.card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 5px;
+  padding-top: 10px;
+  border-top: 1px solid #334155;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.card-meta span strong {
+  color: #f1f5f9;
+}
