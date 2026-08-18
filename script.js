@@ -32,23 +32,27 @@ searchForm.addEventListener("submit", async (e) => {
   resultsGrid.innerHTML = "";
   loader.classList.remove("hidden");
 
-  const prompt = `You are a Sri Lanka local business directory assistant.
-Find 4 to 8 real, verified business or service listings in Sri Lanka matching: "${query}".
+  // Prompt එක වෙනස් කර ඇත: Company පමණක් නොව කුඩා කඩ, කාර්මික ශිල්පීන්, සේවා සපයන්නන් ඇතුළත් කර ඇත
+  const prompt = `You are a Sri Lanka local spot, business, and service finder.
+The user is searching for: "${query}".
 
-Respond ONLY with a JSON array of objects with these exact keys:
+Find 4 to 8 relevant entries matching this specific search query in Sri Lanka.
+DO NOT only return large corporate companies. Include local shops, technicians, individual service providers, clinics, restaurants, or workshops matching the exact town/service requested.
+
+Respond ONLY with a valid JSON array of objects following this exact schema:
 [
   {
-    "name": "Business Name",
-    "category": "Category",
-    "location": "City or Town, Sri Lanka",
-    "contact": "Phone Number",
-    "address": "Street / Address",
-    "description": "Short description of services or opening hours"
+    "name": "Specific Business / Service / Shop / Provider Name",
+    "category": "Specific category (e.g. Masonry, Plumbing, Pharmacy, Seafood Restaurant)",
+    "location": "Town / City / Area in Sri Lanka",
+    "contact": "Phone number, mobile, or hotline",
+    "address": "Road, Junction, Landmark or Street address",
+    "description": "Short explanation of services provided, specialities, or availability"
   }
 ]`;
 
   try {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -56,7 +60,8 @@ Respond ONLY with a JSON array of objects with these exact keys:
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
-          responseMimeType: "application/json"
+          responseMimeType: "application/json",
+          temperature: 0.3
         }
       })
     });
@@ -101,7 +106,7 @@ function renderResults(items) {
   }
 
   resultsGrid.innerHTML = items.map((item) => {
-    const name = escapeHtml(item.name || "Unnamed Business");
+    const name = escapeHtml(item.name || "Unnamed Service");
     const category = escapeHtml(item.category || "");
     const location = escapeHtml(item.location || "Sri Lanka");
     const address = escapeHtml(item.address || "");
