@@ -34,29 +34,24 @@ searchForm.addEventListener("submit", async (e) => {
 
   const prompt = `
     You are a general Sri Lankan business and service directory locator.
-    Perform a live search to find verified listings in Sri Lanka matching: "${query}".
+    Find verified real listings in Sri Lanka matching: "${query}".
     
-    This could be ANY business type (e.g., medical clinics, restaurants, technicians, hardware shops, lawyers, repair services, travel agents, retail stores).
-    
-    Extract and return ONLY a valid JSON array of objects with the exact schema below:
+    Return ONLY a raw JSON array of objects. Do not include markdown codeblocks or explanations.
+    Schema:
     [
       {
-        "name": "Business / Service / Professional Name",
-        "category": "Industry (e.g., Healthcare, Automobile, Dining, Tech)",
-        "location": "City, District, or Town in Sri Lanka",
-        "contact": "Local Phone Number(s) or Hotline",
-        "address": "Full physical address, landmark, or street",
-        "description": "Brief description of services, specialties, or opening hours"
+        "name": "Business / Service Name",
+        "category": "Category / Industry",
+        "location": "City or Town, Sri Lanka",
+        "contact": "Phone Number",
+        "address": "Address or Street",
+        "description": "Short description of services or opening hours"
       }
     ]
-    
-    Rules:
-    - Only return verified, real Sri Lankan business details.
-    - Return strictly raw JSON. Do not include markdown code block ticks (\`\`\`json).
   `;
 
   try {
-    const url = `const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -69,27 +64,28 @@ searchForm.addEventListener("submit", async (e) => {
 
     const data = await response.json();
 
-    if (data.error) {
-      throw new Error(data.error.message || "API request failed");
+    if (!response.ok || data.error) {
+      throw new Error(data.error?.message || `API Error: HTTP ${response.status}`);
     }
 
-    let text = data.candidates?.[0]?.content?.parts?.[0]?.text || "[]";
-
-    // Clean up code block markers
-    text = text.replace(/```json/gi, "").replace(/```/g, "").trim();
-
-    // Extract outer array boundaries
-    const arrayStart = text.indexOf("[");
-    const arrayEnd = text.lastIndexOf("]");
-    if (arrayStart !== -1 && arrayEnd !== -1) {
-      text = text.substring(arrayStart, arrayEnd + 1);
+    let rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!rawText) {
+      throw new Error("No response received from AI model.");
     }
 
-    const businesses = JSON.parse(text);
+    // Extract JSON array from text safely
+    const match = rawText.match(/\[\s*\{[\s\S]*\}\s*\]/);
+    if (!match) {
+      console.warn("Raw output:", rawText);
+      throw new Error("Could not parse listings format. Please try searching again.");
+    }
+
+    const businesses = JSON.parse(match[0]);
     renderResults(businesses);
 
   } catch (err) {
-    showError("Error: " + err.message);
+    console.error("Search Error:", err);
+    showError(err.message || "Failed to fetch results.");
   } finally {
     loader.classList.add("hidden");
   }
@@ -122,7 +118,6 @@ function renderResults(items) {
 
     const mapQuery = encodeURIComponent(`${item.name || ''} ${item.address || ''} ${item.location || 'Sri Lanka'}`.trim());
     const mapUrl = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
-
     const cleanPhone = (item.contact || "").replace(/[^0-9+]/g, "");
 
     return `
