@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sri Lanka Business AI Finder</title>
+  <title>LankaSpot AI - Sri Lanka General Business & Service Finder</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>🇱🇰 Sri Lanka Business & Contact Finder</h1>
-      <p>Search computer shops, repair centers, and services across Sri Lanka using AI.</p>
+      <h1>🇱🇰 LankaSpot AI</h1>
+      <p>Find contact numbers, locations, and details for <strong>any shop, service, or business</strong> in Sri Lanka.</p>
     </header>
 
     <div class="config-card">
@@ -20,11 +20,19 @@
     </div>
 
     <form id="searchForm">
-      <input type="text" id="queryInput" placeholder="e.g., Colombo computer parts shops, Kandy laptop repair..." required>
+      <input type="text" id="queryInput" placeholder="e.g. Dentists in Kandy, Car rentals in Colombo, Plumbers in Galle..." required>
       <button type="submit" id="searchBtn">Search</button>
     </form>
 
-    <div id="loader" class="loader hidden">Searching live data...</div>
+    <div class="suggestions">
+      <span>Try:</span>
+      <button type="button" class="tag" onclick="setQuery('Emergency 24 hour pharmacies in Colombo')">Pharmacies</button>
+      <button type="button" class="tag" onclick="setQuery('Top rated seafood restaurants in Negombo')">Restaurants</button>
+      <button type="button" class="tag" onclick="setQuery('Solar panel installation companies in Sri Lanka')">Solar Services</button>
+      <button type="button" class="tag" onclick="setQuery('AC repair and service technicians in Gampaha')">AC Repair</button>
+    </div>
+
+    <div id="loader" class="loader hidden">Searching verified Sri Lankan listings...</div>
     <div id="error" class="error-msg hidden"></div>
 
     <div id="resultsGrid" class="results-grid"></div>
