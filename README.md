@@ -20,13 +20,13 @@ Check out the live web app here:
 
 ## 🤖 How AI is Used in this Project
 
-This application leverages the **Google Gemini API (`gemini-2.5-flash`)** along with **Google Search Grounding** to solve the problem of locating local, unstructured contact information:
+This application leverages the **Google Gemini API (`gemini-3.6-flash`)** along with **Google Search Grounding** to solve the problem of locating local, unstructured contact information:
 
 ```text
 [User Prompt] 
       │
       ▼
-[Gemini 2.5 Flash] ─── (Google Search Grounding) ───► [Live Web Pages / Google Maps Data]
+[Gemini 3.6 Flash] ─── (Google Search Grounding) ───► [Live Web Pages / Google Maps Data]
       │                                                          │
       ▼                                                          ▼
 [Extract & Validate] ◄────────────────────────────────── [Raw Search Results]
